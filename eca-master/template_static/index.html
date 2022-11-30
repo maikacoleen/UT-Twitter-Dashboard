@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TweetBoard</title>
+<link rel="stylesheet" href="/style/layout.css"/>
+<link rel="stylesheet" href="/style/theme.css"/>
+<link rel="stylesheet" href="/style/wordcloud.css"/>
+<script src="/lib/jquery-2.1.1.min.js"></script>
+<script src="/lib/jquery.flot.min.js"></script>
+<script src="/lib/core.js"></script>
+<script src="/lib/log.js"></script>
+<script src="/lib/tweets.js"></script>
+<script src="/lib/form.js"></script>
+<script src="/lib/jqcloud-1.0.4.js"></script>
+<script src="/lib/wordcloud.js"></script>
+<script src="/lib/charts.js"></script>
+<script src="/lib/jquery.flot.pie.js"></script>
+</head>
+<body class="container_12" background="backgroundfifa.jpg">
+<h1 style="color:white" align="center">Worldcup Final 2014 Twitter Dashboard</h1>
+
+<div class="clear"></div>
+
+<!-- contains all possible filters-->
+<div id="filter" class="grid_12" align="left">
+    <form>
+        <div>
+            <select name='Language'>
+                <option value="ALL">choose Language</option>
+                <option value="ar">Arabic</option>
+                <option value="az">Azerbaijani</option>
+                <option value="eu">Basque</option>
+                <option value="bn">Bengali</option>
+                <option value="nb">Bokmal</option>
+                <option value="bs">Bosnian</option>
+                <option value="bg">Bulgarian</option>
+                <option value="my">Burmese</option>
+                <option value="ca">Catalan</option>
+                <option value="zh">Chinese</option>
+                <option value="hr">Croatian</option>
+                <option value="cs">Czech</option>
+                <option value="da">Danish</option>
+                <option value="nl">Dutch</option>
+                <option value="en">English</option>
+                <option value="et">Estonian</option>
+                <option value="fi">Finnish</option>
+                <option value="fr">French</option>
+                <option value="ka">Georgian</option>
+                <option value="de">German</option>
+                <option value="el">Greek</option>
+                <option value="ht">Haitian</option>
+                <option value="he">Hebrew</option>
+                <option value="hi">Hindi</option>
+                <option value="hu">Hungarian</option>
+                <option value="is">Icelandic</option>
+                <option value="in">Indonesian</option>
+                <option value="it">Italian</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="ku">Kurdish</option>
+                <option value="lo">Lao</option>
+                <option value="lv">Latvian</option>
+                <option value="lt">Lithuanian</option>
+                <option value="ms">Malay</option>
+                <option value="ml">Malayalam</option>
+                <option value="ne">Nepali</option>
+                <option value="no">Norwegian</option>
+                <option value="fa">Persian</option>
+                <option value="pt">Portuguese</option>
+                <option value="pl">Polish</option>
+                <option value="ro">Romanian</option>
+                <option value="ru">Russian</option>
+                <option value="sr">Serbian</option>
+                <option value="sl">Slovenian</option>
+                <option value="sk">Slovak</option>
+                <option value="es">Spanish</option>
+                <option value="sv">Swedish</option>
+                <option value="sw">Swahili</option>
+                <option value="tl">Tagalog</option>
+                <option value="ta">Tamil</option>
+                <option value="te">Telugu</option>
+                <option value="th">Thai</option>
+                <option value="tr">Turkish</option>
+                <option value="uk">Ukrainian</option>
+                <option value="ur">Urdu</option>
+                <option value="vi">Vietnamese</option>
+                <option value="cy">Welsh</option>     
+            </select>
+            <label for='type_box' style="color:white">Search #</label> <input type='text' name='Hashtag' id='type_box'/>
+            <input type='checkbox' name='fifa_ticked' value='true' id='fifa_box'/> <label for='sugar_box' style="color:white">Official FIFA page</label>
+            <input type='submit' value='Refresh'/>
+        </div>
+    </form>
+</div>
+
+<div class="clear"></div>
+
+<!-- placeholder for the tweetlist-->
+<div id="tweetList" class="grid_8 vert_10"></div> 
+
+<!-- placeholder for the log entries-->
+<div id="pie" class="grid_4 vert_4"></div>
+
+<!-- placeholder for the wordcloud-->
+<div id="cloud" class="grid_4 vert_4" style="background:rgba(0,0,0,0.7)"></div> 
+
+
+<script>
+// create a tweet list with 20 entries. If maximum of 20 is reached the tweets get discarded via FIFO principle.
+block('#tweetList').tweets({
+    memory: 20
+    }
+);
+// connect tweet event to tweetList
+events.connect('tweet', '#tweetList');
+
+// generates an event 'filters' if user submits a refresh with target to /api/filters
+block('#filter').form({
+    target: '/api/filter'
+});
+
+// connect  log to 'filters' emit
+
+block('#cloud').wordcloud({
+    filter_function: function(cat, val, max){
+        return val>=3 // a word does not get displayed unless it occured at least 5 times.
+    }
+});
+events.connect('word', '#cloud');
+
+block('#pie').piechart();
+events.connect('piepie', '#pie');
+
+</script>
+</body>
+</html>
